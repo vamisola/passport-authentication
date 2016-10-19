@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>
-      Passport Login
-      <link rel-"stylesheets" href="/stylesheets/style.css"
-    </title>
-  </head>
-  <body>
-    {{{messages}}}
-    {{ #if errors }}
-      {{#each errors }}
-        {{msg}}
-      {{/each}}
-    {{/if}}
-    {{{body}}}
-  </body>
+	<head>
+		<title>Passport Login</title>
+		<link rel="stylesheet" href="/stylesheets/style.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css">
+	</head>
+	<body>
+		<div class="container">
+			{{{messages}}}
+				{{#if errors}}
+					{{#each errors}}
+						<div class="alert alert-danger">{{msg}}</div>
+					{{/each}}
+				{{/if}}
+			{{{body}}}
+		</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="/javascripts/bootstrap.js"></script>
+	</body>
 </html>

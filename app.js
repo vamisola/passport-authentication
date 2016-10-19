@@ -2,28 +2,27 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var expressValidator =  require("express-validator");
+var expressValidator = require('express-validator');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
-var flash = require("connect-flash");
-var session = require("express-session");
-var passport = require("passport");
-var mongoose = require("mongoose");
+var flash = require('connect-flash');
+var session = require('express-session');
+var passport = require('passport');
+var mongoose = require('mongoose');
 
-var configDB = require("./config/db.js");
-
+var configDB = require('./config/db.js');
 mongoose.connect(configDB.url);
 
+require('./config/passport')(passport);
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exphbs({defaultLayout: 'layout'}));
+app.engine('handlebars', exphbs({defaultLayout:'layout'}));
 app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
@@ -34,21 +33,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//express session
 app.use(session({
   secret: 'secret',
-  saveUninitialized : true,
+  saveUninitialized: true,
   resave: true
 }));
 
-//express-messages
+// Passport init
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(require('connect-flash')());
-app.use(function(req,res,next){
-  res.locals.messages = require('express-messages')(req,res);
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
   next();
 });
 
-// In this example, the formParam value is going to get morphed into form body format useful for printing.
 app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
       var namespace = param.split('.')
@@ -66,9 +66,16 @@ app.use(expressValidator({
   }
 }));
 
+// Global Vars
+app.use(function(req, res, next){
+  if(req.user){
+    res.locals.username = req.user.username;
+  }
+
+  next();
+});
 
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
